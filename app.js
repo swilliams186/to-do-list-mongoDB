@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const db = require(__dirname + "/mongoDB.js")
 
 const app = express();
 const date = require(__dirname+"/date.js");
@@ -13,16 +14,22 @@ var workItems = [];
 
 app.post("/", function(req, res){
     items.push(req.body.newToDo);
+    db.addItem("work", {text: req.body.newToDo});
     res.redirect("/");
 
 });
 
-app.get("/", function(req, res){
+app.get("/", async function(req, res){
     dayText =  date.getDate();
+    const todoList = await db.getList("work");
+    console.log("aaaaaaaaa" + todoList);
+    // todoList.forEach(function(item){
+    //     console.log(item.text);
+    // });
 
     res.render('list', {
         listTitle: dayText,
-        items: items,
+        items: todoList,
         postAction: "/"
         });
 
@@ -31,6 +38,7 @@ app.get("/", function(req, res){
 
 app.listen(3000, function(){
     console.log("Server started on port 3000");
+    db.connect();
 });
 
 app.get("/work", function(req,res){
