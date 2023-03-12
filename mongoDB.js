@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const uri = "mongodb://127.0.0.1:27017";
 const client = new MongoClient(uri);
 let database = "";
@@ -24,45 +24,41 @@ exports.connect = function () {
     });
 }
 
-exports.getList = async function (listName) {
+exports.getList = async function () {
     var todoItems;
     
         try {
             //This returns a cursor that must be turned into an array
             todoItems = await collection.find({}).toArray();
-            //todoItems is defined correctly here
 
         } catch(e){
             console.log("Error finding list:\n"+e);
         }
     
-    //todoItems is undefinded here ???
     return todoItems;
 }
 
-exports.addItem = function (listName, item){
-
-    async function run() {
-        try {
-            
-            coll = getCollection(listName);
-            console.log("Connected to collection: " + listName);
-            await coll.insertOne({text: item});
-        } finally {
-            await client.close();
-            console.log("MongoDB connection closed");
-        }
-    }
-    run().catch(console.dir, function (error) {
+exports.addItem = async function (item){
+        try {           
+            const result = await client.db("todolist").collection("work").insertOne({text: item});
+            console.log(result);
+        } catch(error) {
         console.log("Error adding item to collection");
         console.log(error);
-
-    });
+    };
 }
 
-async function getCollection(listName){
-    await client.connect();
-    const database = client.db('todolist');
-    const todoColl = database.collection(listName);
-    return todoColl;
+exports.removeItem = async function (idToRemove){
+    console.log("removing item");
+    try {     
+        // const result = await collection.deleteOne({_id: idToRemove});
+        const x = new ObjectId(idToRemove);
+        const result = await client.db("todolist").collection("work").deleteOne({_id: x});
+
+        console.log(result) ;
+    } catch(error) {
+    console.log("Error deleting item from collection");
+    console.log(error);
+    };
+    
 }

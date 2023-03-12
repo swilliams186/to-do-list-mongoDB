@@ -14,18 +14,14 @@ var workItems = [];
 
 app.post("/", function(req, res){
     items.push(req.body.newToDo);
-    db.addItem("work", {text: req.body.newToDo});
+    db.addItem(req.body.newToDo);
     res.redirect("/");
 
 });
 
 app.get("/", async function(req, res){
     dayText =  date.getDate();
-    const todoList = await db.getList("work");
-    console.log("aaaaaaaaa" + todoList);
-    // todoList.forEach(function(item){
-    //     console.log(item.text);
-    // });
+    const todoList = await db.getList();
 
     res.render('list', {
         listTitle: dayText,
@@ -51,6 +47,14 @@ app.post("/work", function(req,res){
    workItems.push(req.body.newToDo);
    res.redirect("/work"); 
 });
+
+app.post("/delete", function(req,res){
+    console.log(req.body.checkbox);
+    deletedId = req.body.checkbox;
+    db.removeItem(deletedId);
+    res.redirect("/"); 
+
+ });
 
 
 app.get("/about", function (req, res) {
