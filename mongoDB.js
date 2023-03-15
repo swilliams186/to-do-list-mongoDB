@@ -1,10 +1,7 @@
 const { MongoClient, ObjectId } = require("mongodb");
 //const uri = "mongodb://127.0.0.1:27017";
+const { username, password, uri } = require(__dirname+"/logins")
 
-
-const password = "GLaZutNKlb4CX5ID";
-const user="admin-steve";
-const uri = "mongodb+srv://"+user+":"+password+"@cluster0.amlut6i.mongodb.net/?retryWrites=true&w=majority"
 const client = new MongoClient(uri);
 let database = "";
 let collection = "";
