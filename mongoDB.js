@@ -11,7 +11,7 @@ exports.connect = function () {
             database = client.db('todolist');
             collection = database.collection('work');
 
-            console.log("MongoDB connected and db name todolist and collection name todo created...");
+            console.log("MongoDB connected and db name todolist and collection name work created...");
         } 
         catch(e){
             console.log("Error connecting\n"+e);
@@ -24,12 +24,12 @@ exports.connect = function () {
     });
 }
 
-exports.getList = async function () {
+exports.getList = async function (listName) {
     var todoItems;
     
         try {
             //This returns a cursor that must be turned into an array
-            todoItems = await collection.find({}).toArray();
+            todoItems = await database.collection(listName).find({}).toArray();
 
         } catch(e){
             console.log("Error finding list:\n"+e);
@@ -38,9 +38,10 @@ exports.getList = async function () {
     return todoItems;
 }
 
-exports.addItem = async function (item){
+exports.addItem = async function (listName, item){
         try {           
-            const result = await client.db("todolist").collection("work").insertOne({text: item});
+            //const result = await client.db("todolist").collection("work").insertOne({text: item});
+            const result = await database.collection(listName).insertOne({text: item});
             console.log(result);
         } catch(error) {
         console.log("Error adding item to collection");
@@ -48,12 +49,23 @@ exports.addItem = async function (item){
     };
 }
 
-exports.removeItem = async function (idToRemove){
+exports.addMultipleItems = async function (listName, items){
+    try {           
+        //const result = await client.db("todolist").collection("work").insertOne({text: item});
+        const result = await database.collection(listName).insertMany(items);
+        console.log(result);
+    } catch(error) {
+    console.log("Error adding item to collection");
+    console.log(error);
+};
+}
+
+exports.removeItem = async function (listName, idToRemove){
     console.log("removing item");
     try {     
         // const result = await collection.deleteOne({_id: idToRemove});
         const x = new ObjectId(idToRemove);
-        const result = await client.db("todolist").collection("work").deleteOne({_id: x});
+        const result = await client.db("todolist").collection(listName).deleteOne({_id: x});
 
         console.log(result) ;
     } catch(error) {
