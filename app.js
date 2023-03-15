@@ -4,6 +4,9 @@ const db = require(__dirname + "/mongoDB.js")
 
 const app = express();
 const date = require(__dirname+"/date.js");
+//const port = 3000; //This is only local
+const port = process.env.PORT; //Dynamic port controlled by heroku
+
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
@@ -33,8 +36,8 @@ app.get("/", async function(req, res){
 
 });
 
-app.listen(3000, function(){
-    console.log("Server started on port 3000");
+app.listen(port || 3000, function(){
+    console.log("Server started on port " + port);
     db.connect();
 });
 
