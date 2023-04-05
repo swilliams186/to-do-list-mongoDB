@@ -1,5 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const { ToDoItemModel } = require("./mongooseDB");
+const mongoose = require(__dirname+"/mongooseDB.js")
 
 const app = express();
 const date = require(__dirname+"/date.js");
@@ -8,8 +10,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
 
-var items = ["cheese", "Milk", "ham"];
-var workItems = [];
+const items = ["green", "eggs", "and", "ham"];
 
 app.post("/", function(req, res){
     items.push(req.body.newToDo);
@@ -47,4 +48,28 @@ app.post("/work", function(req,res){
 
 app.get("/about", function (req, res) {
     res.render("about");
+})
+
+app.get("/:listId", async function (req, res) {
+    listId = req.params.listId;
+    listItems = await mongoose.getListItems(listId);
+
+    res.render("list", {
+        listTitle: listId,
+        items: listItems,
+        postAction : "/" + listId
+    })
+})
+
+app.post("/:listId", async function (req, res) {
+    listId = req.params.listId;
+
+    toDoItem = new mongoose.ToDoItemModel({
+        list: listId,
+        text: req.body.newToDo
+    })  //Not sure it's good practice to use the model outside the mongoose class?
+
+    await mongoose.addItemToList(toDoItem);
+
+    res.redirect("/" + listId)
 })
