@@ -36,3 +36,7 @@ exports.getListItems = async function(listId){
 exports.addItemToList = async function(toDoItem){
   await toDoItem.save();
 }
+
+exports.removeItemFromList = async function(itemId){
+  await TodoItem.deleteOne({_id: itemId});
+}
